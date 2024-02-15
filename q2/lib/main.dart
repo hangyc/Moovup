@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:q2/network/person_list_network_service.dart';
 
 import 'package:q2/repository/person_repository.dart';
 import 'package:q2/view/person_map_view.dart';
@@ -25,7 +26,8 @@ class Q2App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Q2AppWidget(PersonRepository()),
+      home:
+          Q2AppWidget(PersonRepository(PersonListNetworkService(), hive: Hive)),
     );
   }
 }
@@ -43,10 +45,6 @@ class Q2AppWidget extends StatefulWidget {
 }
 
 class _Q2AppWidgetState extends State<Q2AppWidget> {
-  // TODO:
-  // share repository instead of view model (cache in repository layer)
-  // create PersonMapViewModel to separate logic
-  // PersonMapViewModel return filtered person list with valid latlng
   _Q2AppWidgetState(this._repository);
 
   int _selectedIndex = 0;

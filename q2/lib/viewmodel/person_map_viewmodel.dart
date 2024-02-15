@@ -12,13 +12,18 @@ class PersonMapViewModel extends PersonViewModel {
 
   @override
   void onDataLoad(List<Person> data) {
-    List<Person> filtered =
-        data.where((element) => element.location.getLatLng() != null).toList();
+    List<Person> filtered = handleData(data);
 
     LatLng? loc = filtered.first.location.getLatLng();
     if (loc != null) {
       mapOptions = MapOptions(initialCenter: loc, initialZoom: 14.0);
     }
     super.onDataLoad(filtered);
+  }
+
+  List<Person> handleData(List<Person> data) {
+    return data
+        .where((element) => element.location.getLatLng() != null)
+        .toList();
   }
 }

@@ -5,7 +5,8 @@ import 'package:q2/mvvm/viewmodel.dart';
 import 'package:q2/mvvm/observer.dart';
 
 class PersonViewModel extends EventViewModel {
-  final PersonRepository _repository;
+  // final PersonRepository _repository;
+  final PersonRepositoryAbstract _repository;
 
   PersonViewModel(this._repository);
 

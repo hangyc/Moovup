@@ -1,6 +1,5 @@
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:q2/mvvm/observer.dart';
 
 import 'package:q2/mvvm/viewmodel.dart';
 import 'package:q2/model/person.dart';
@@ -29,10 +28,4 @@ class PersonDetailViewModel extends EventViewModel {
       return null;
     }
   }
-}
-
-class MarkerEvent extends ViewEvent {
-  final LatLng? latLng;
-
-  MarkerEvent({required this.latLng}) : super("Invalid location");
 }

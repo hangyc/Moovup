@@ -1,23 +1,40 @@
 import 'dart:convert';
-import 'package:hive/hive.dart';
+import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
-import 'package:q2/network/person_request.dart';
+import 'package:q2/network/person_list_network_service.dart';
 
 import 'package:q2/model/person.dart';
+import 'package:q2/repository/api_repository.dart';
 import 'package:q2/storage/api_response_box.dart';
 
-class PersonRepository {
-  static const String _boxname = "apiResponses";
-  static const String _cacheId = "person_key";
+abstract class PersonRepositoryAbstract {
+  List<Person> get persons;
+  Future<List<Person>> fetchPersons();
+}
 
+class PersonRepository extends ApiRepository
+    implements PersonRepositoryAbstract {
+  static const String _cacheId = "person_key";
+  final PersonListNetworkServiceable service;
+
+  @override
+  List<Person> persons = [];
+
+  PersonRepository(this.service, {required super.hive});
+
+  @override
   Future<List<Person>> fetchPersons() async {
+    if (persons.isNotEmpty) {
+      // in memory cache
+      return Future.value(persons);
+    }
     final hasConnected = await InternetConnectionChecker().hasConnection;
     if (hasConnected) {
       final List<Person> response = await _fetchPersons();
+      persons = response;
       String jsonString = json.encode(response);
-      // save jsonString to
-      save(jsonString);
+      await saveResponse(_cacheId, jsonString);
       return Future.value(response);
     } else {
       return _fetchPersonsLocally();
@@ -25,19 +42,13 @@ class PersonRepository {
   }
 
   Future<List<Person>> _fetchPersons() async {
-    return PersonRequest().fetch();
+    return service.fetch();
   }
 
+  // ignore: invalid_visibility_annotation
+  @visibleForTesting
   Future<List<Person>> _fetchPersonsLocally() async {
-    final box = await Hive.openBox(_boxname);
-    // box.clear();
-
-    ApiResponseBox? cachedResponse;
-    if (box.isNotEmpty) {
-      cachedResponse =
-          box.values.firstWhere((element) => element.id == _cacheId);
-    }
-    box.close();
+    ApiResponseBox? cachedResponse = await loadResponse(_cacheId);
 
     if (cachedResponse != null) {
       Iterable l = json.decode(cachedResponse.response);
@@ -47,16 +58,17 @@ class PersonRepository {
     }
     return Future.error('No cache data');
   }
+}
 
-  void save(String response) async {
-    final box = await Hive.openBox(_boxname);
-    // Save new response to cache
-    final newResponse = ApiResponseBox()
-      ..id = _cacheId
-      ..response = response
-      ..timestamp = DateTime.now().millisecondsSinceEpoch;
-    await box.add(newResponse);
+// For unit test only
+extension PersonRepositoryStub on PersonRepository {
+  // ignore: non_constant_identifier_names
+  Future<List<Person>> public_fetchPersons() async {
+    return _fetchPersons();
+  }
 
-    box.close();
+  // ignore: non_constant_identifier_names
+  Future<List<Person>> public_fetchPersonsLocally() async {
+    return _fetchPersonsLocally();
   }
 }
