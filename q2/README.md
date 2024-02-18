@@ -1,16 +1,13 @@
-# q2
+# Q2
 
-A new Flutter project.
+### Compile and Hot-Reload for Development
 
-## Getting Started
+```sh
+flutter run
+```
+### Deployment
 
-This project is a starting point for a Flutter application.
+Replace the bundle ID (search "com.example.q2" in project) with yours
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Check out deployment step for iOS / Android
+https://docs.flutter.dev/deployment/
